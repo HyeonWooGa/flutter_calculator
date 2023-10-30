@@ -43,7 +43,7 @@ class _AppState extends State<App> {
               case '-':
                 result -= num.parse(calculate[i]);
                 break;
-              case '*':
+              case 'X':
                 result *= num.parse(calculate[i]);
                 break;
               case '/':
@@ -100,7 +100,7 @@ class _AppState extends State<App> {
                       el,
                       style: TextStyle(
                         color:
-                            '+-*/'.contains(el) ? Colors.green : Colors.white,
+                            '+-X/'.contains(el) ? Colors.green : Colors.white,
                         fontSize: 56,
                       ),
                     ),
