@@ -12,65 +12,65 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  num preNum = 0, postNum = 0, result = 0;
-  String operator = '';
-  bool hasPreNum = false;
-  bool hasOperator = false;
-  bool hasPostNum = false;
+  List<String> calculate = [];
+  num result = 0;
 
   void onClickVoid() {}
 
   void onClickClear() {
-    preNum = 0;
-    postNum = 0;
+    calculate.clear();
     result = 0;
-    hasPreNum = false;
-    hasOperator = false;
-    hasPostNum = false;
     setState(() {});
   }
 
   void onClickNum(numClicked) {
-    if (hasPreNum) {
-      postNum = numClicked;
-      switch (operator) {
-        case '+':
-          result = preNum + postNum;
-          break;
-        case '-':
-          result = preNum - postNum;
-          break;
-        case 'X':
-          result = preNum * postNum;
-          break;
-        case '/':
-          result = preNum / postNum;
-          break;
-        default:
-          break;
-      }
-      hasPostNum = true;
+    if (calculate.length % 2 == 0) {
+      calculate.add(numClicked.toString());
     } else {
-      preNum = numClicked;
-      hasPreNum = true;
+      calculate[calculate.length - 1] =
+          '${calculate[calculate.length - 1]}' '${numClicked.toString()}';
+    }
+    if (calculate.length >= 3) {
+      for (int i = 0; i < calculate.length; i++) {
+        if (i % 2 == 0) {
+          if (i == 0) {
+            result = num.parse(calculate[i]);
+          } else {
+            switch (calculate[i - 1]) {
+              case '+':
+                result += num.parse(calculate[i]);
+                break;
+              case '-':
+                result -= num.parse(calculate[i]);
+                break;
+              case '*':
+                result *= num.parse(calculate[i]);
+                break;
+              case '/':
+                result /= num.parse(calculate[i]);
+                break;
+              default:
+                break;
+            }
+          }
+        }
+      }
     }
     setState(() {});
   }
 
   void onClickOperator(operatorClicked) {
-    if (!hasOperator) {
-      operator = operatorClicked;
-      hasOperator = true;
+    if (calculate.length % 2 != 0) {
+      calculate.add(operatorClicked);
+    } else {
+      calculate[calculate.length - 1] = operatorClicked;
     }
     setState(() {});
   }
 
   void onClickEqual() {
-    hasPostNum = false;
-    hasOperator = false;
-    postNum = 0;
-    operator = '';
-    preNum = result;
+    calculate.clear();
+    calculate.add(result.toString());
     result = 0;
     setState(() {});
   }
@@ -88,37 +88,39 @@ class _AppState extends State<App> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Text(
-                    '$preNum',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 56,
+                  if (calculate.isEmpty)
+                    const Text(
+                      '',
+                      style: TextStyle(
+                        fontSize: 56,
+                      ),
                     ),
-                  ),
-                  Text(
-                    hasOperator ? operator : '',
-                    style: const TextStyle(
-                      color: Colors.green,
-                      fontSize: 56,
+                  for (var el in calculate)
+                    Text(
+                      el,
+                      style: TextStyle(
+                        color:
+                            '+-*/'.contains(el) ? Colors.green : Colors.white,
+                        fontSize: 56,
+                      ),
                     ),
-                  ),
-                  Text(
-                    hasPostNum ? '$postNum' : '',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 56,
-                    ),
-                  ),
                 ],
               ),
               const SizedBox(height: 140),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Text(
-                    hasPostNum ? '$result' : '',
-                    style: const TextStyle(color: Colors.white54, fontSize: 24),
-                  ),
+                  if (calculate.length < 3)
+                    const Text(
+                      '',
+                      style: TextStyle(color: Colors.white54, fontSize: 24),
+                    ),
+                  if (calculate.length >= 3)
+                    Text(
+                      '$result',
+                      style:
+                          const TextStyle(color: Colors.white54, fontSize: 24),
+                    ),
                 ],
               ),
               const SizedBox(height: 30),
